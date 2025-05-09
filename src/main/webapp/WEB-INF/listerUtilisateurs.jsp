@@ -166,7 +166,7 @@
         </c:if>
         
         <div class="header-actions">
-            <a href="/crud/AfficherFormulaire" class="btn btn-add">+ Ajouter un utilisateur</a>
+            <a href="AjouterUtilisateur" class="btn btn-add">+ Ajouter un utilisateur</a>
         </div>
         <table>
             <thead>

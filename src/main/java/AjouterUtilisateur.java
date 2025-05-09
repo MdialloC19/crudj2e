@@ -1,7 +1,4 @@
-
-
 import jakarta.servlet.ServletException;
-
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,37 +7,31 @@ import java.io.IOException;
 
 import beans.Utilisateur;
 import dao.UtilisateurDao;
-import java.util.*;
-
 
 /**
- * Servlet implementation class AfficherFormulaire
+ * Servlet implementation class AjouterUtilisateur
+ * Cette servlet traite l'ajout d'un nouvel utilisateur dans la base de données
  */
-@WebServlet("/AfficherFormulaire")
-public class AfficherFormulaire extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+@WebServlet("/AjouterUtilisateur")
+public class AjouterUtilisateur extends HttpServlet {
+    private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AfficherFormulaire() {
+    public AjouterUtilisateur() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
-		//request.setAttribute("utilisateurs", UtilisateurDao.lister());
-		getServletContext().getRequestDispatcher("/WEB-INF/ajoutUtilisateurs.jsp").forward(request, response);
-        
-	}
-	
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Redirection vers la page d'ajout
+        getServletContext().getRequestDispatcher("/WEB-INF/ajoutUtilisateurs.jsp").forward(request, response);
+    }
 
-	/**
+    /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,7 +62,4 @@ public class AfficherFormulaire extends HttpServlet {
         // Redirection vers la liste des utilisateurs
         response.sendRedirect("ListeUsers");
     }
-
 }
-
-

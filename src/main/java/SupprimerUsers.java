@@ -1,7 +1,4 @@
-
-
 import jakarta.servlet.ServletException;
-
 import dao.UtilisateurDao;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,17 +7,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet implementation class SupprimierUsers
+ * Servlet implementation class SupprimerUsers
  * Cette servlet gère la suppression des utilisateurs
  */
 @WebServlet("/SupprimerUsers")
-public class SupprimierUsers extends HttpServlet {
+public class SupprimerUsers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SupprimierUsers() {
+    public SupprimerUsers() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -67,5 +64,4 @@ public class SupprimierUsers extends HttpServlet {
 		// Appel de la méthode doGet pour traiter la suppression
 		doGet(request, response);
 	}
-
 }

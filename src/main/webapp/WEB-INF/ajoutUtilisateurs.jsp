@@ -103,7 +103,7 @@
 
     <div class="container">
         <h1>Ajouter un Utilisateur</h1>
-        <form action="AfficherFormulaire" method="POST">
+        <form action="AjouterUtilisateur" method="POST">
             <label for="nom">Nom :</label>
             <input type="text" id="nom" name="nom" placeholder="Entrez le nom" required>
 

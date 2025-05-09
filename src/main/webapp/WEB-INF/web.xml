@@ -11,6 +11,61 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
     
+    <!-- Définition des servlets -->
+    <servlet>
+        <servlet-name>ListeUsers</servlet-name>
+        <servlet-class>ListeUsers</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListeUsers</servlet-name>
+        <url-pattern>/ListeUsers</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>AfficherFormulaire</servlet-name>
+        <servlet-class>AfficherFormulaire</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AfficherFormulaire</servlet-name>
+        <url-pattern>/AfficherFormulaire</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>AjouterUtilisateur</servlet-name>
+        <servlet-class>AjouterUtilisateur</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjouterUtilisateur</servlet-name>
+        <url-pattern>/AjouterUtilisateur</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ModifierUsers</servlet-name>
+        <servlet-class>ModifierUsers</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ModifierUsers</servlet-name>
+        <url-pattern>/ModifierUsers</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SupprimerUsers</servlet-name>
+        <servlet-class>SupprimerUsers</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SupprimerUsers</servlet-name>
+        <url-pattern>/SupprimerUsers</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ViewUser</servlet-name>
+        <servlet-class>ViewUser</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewUser</servlet-name>
+        <url-pattern>/viewUser</url-pattern>
+    </servlet-mapping>
+    
     <!-- Configuration des pages d'erreur -->
     <error-page>
         <exception-type>java.lang.Exception</exception-type>
