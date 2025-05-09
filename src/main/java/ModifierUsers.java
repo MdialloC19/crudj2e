@@ -1,10 +1,10 @@
 
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import beans.Utilisateur;
@@ -29,56 +29,54 @@ public class ModifierUsers extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		// je dois recupérer d'abord id puis creer recuperer l'utilisateur avec le DAO
-		//puis envoyer ça  à la pape 
+		// Récupérer l'id de l'utilisateur à modifier
+		int idUser = Integer.parseInt(request.getParameter("id"));
+		System.out.println("ID utilisateur à modifier: " + idUser);
 		
-		int idUser=Integer.parseInt(request.getParameter("id"));
-		System.out.println(idUser);
+		// Récupérer l'utilisateur et le mettre dans la requête
 		request.setAttribute("utilisateur", UtilisateurDao.trouver(idUser));
 		
-		
-		getServletContext().getRequestDispatcher("/WEB-INF/modifierUtilisateurs.jsp").forward(request, response);
+		// Rediriger vers la page de modification
+		request.getRequestDispatcher("/WEB-INF/modifierUtilisateurs.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try {
-          
             int id = Integer.parseInt(request.getParameter("id"));
             String nom = request.getParameter("nom");
             String prenom = request.getParameter("prenom");
             String login = request.getParameter("login");
             String password = request.getParameter("password");
 
-           
             if (nom == null || prenom == null || login == null || password == null ||
                 nom.isEmpty() || prenom.isEmpty() || login.isEmpty() || password.isEmpty()) {
-                request.setAttribute("error", "Tous les champs sont obligatoires.");
-                request.getRequestDispatcher("modifierUtilisateur.jsp").forward(request, response);
+                // Utilisation de la session pour stocker le message d'erreur
+                request.getSession().setAttribute("erreur", "Tous les champs sont obligatoires.");
+                // Récupération de l'utilisateur pour pré-remplir le formulaire
+                request.setAttribute("utilisateur", UtilisateurDao.trouver(id));
+                request.getRequestDispatcher("/WEB-INF/modifierUtilisateurs.jsp").forward(request, response);
                 return;
             }
 
-           
             Utilisateur utilisateur = new Utilisateur(nom, prenom, login, password);
             utilisateur.setID(id); 
 
-            
             boolean updated = UtilisateurDao.mettreAJour(utilisateur);
 
-            
             if (updated) {
+                request.getSession().setAttribute("message", "Utilisateur modifié avec succès.");
                 response.sendRedirect("ListeUsers"); 
             } else {
-                request.setAttribute("error", "La modification a échoué. Veuillez réessayer.");
-                request.getRequestDispatcher("modifierUtilisateur.jsp").forward(request, response);
+                request.getSession().setAttribute("erreur", "La modification a échoué. Veuillez réessayer.");
+                request.setAttribute("utilisateur", utilisateur);
+                request.getRequestDispatcher("/WEB-INF/modifierUtilisateurs.jsp").forward(request, response);
             }
         } catch (Exception e) {
-            request.setAttribute("error", "Erreur lors de la modification : " + e.getMessage());
-            request.getRequestDispatcher("modifierUtilisateur.jsp").forward(request, response);
+            request.getSession().setAttribute("erreur", "Erreur lors de la modification : " + e.getMessage());
+            response.sendRedirect("ListeUsers");
         }
     }
 	

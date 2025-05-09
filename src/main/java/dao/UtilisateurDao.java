@@ -1,37 +1,71 @@
 package dao;
 
 import beans.Utilisateur;
+import java.sql.*;
 import java.util.ArrayList;
 
+
 /**
- * C'est la classe qu'il faut en premier tout le temps!!!!!
+ * C'est la classe qu'il faut regarder en premier tout le temps!!!!! Boul dofff
  * Data Access Object (DAO) pour la gestion des Utilisateurs.
- * Utilise une liste statique en mémoire pour simuler une base de données. 
- * (Mr Diop dit qu'à chaque fois qu'on veut des données se charge à la chargement de la classe,
- * il faut le mettre dans une portée static.
+ * V2 on va utiliser
+ * Utilise JDBC pour interagir avec une base de données.
  */
+
 public class UtilisateurDao {
 
-    private static int lastId = 1;
-    private static ArrayList<Utilisateur> utilisateurs = new ArrayList<Utilisateur>();
-
-    // Initialisation avec quelques utilisateurs par défaut
-    static {
-        ajouter(new Utilisateur("Dupont", "Jean", "jdupont", "password123"));
-        ajouter(new Utilisateur("Smith", "Alice", "asmith", "securepass"));
-        ajouter(new Utilisateur("Doe", "John", "jdoe", "qwerty123"));
-        ajouter(new Utilisateur("Brown", "Emma", "ebrown", "emma2024"));
-        ajouter(new Utilisateur("Johnson", "Michael", "mjohnson", "mikepass"));
-    }
-
     /**
-     * Ajoute un nouvel utilisateur à la liste.
+     * Ajoute un nouvel utilisateur à la base de données.
      *
      * @param utilisateur L'utilisateur à ajouter.
      */
     public static void ajouter(Utilisateur utilisateur) {
-        utilisateur.setID(lastId++);
-        utilisateurs.add(utilisateur);
+        String sql = "INSERT INTO utilisateurs (nom, prenom, login, password) VALUES (?, ?, ?, ?)";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, utilisateur.getNom());
+            stmt.setString(2, utilisateur.getPrenom());
+            stmt.setString(3, utilisateur.getLogin());
+            stmt.setString(4, utilisateur.getPassword());
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    utilisateur.setID(rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Ajoute plusieurs utilisateurs fictifs à la base de données.
+     */
+    public static void ajouterUtilisateursFictifs() {
+        String sql = "INSERT INTO utilisateurs (nom, prenom,login, password) VALUES (?, ?, ?, ?)";
+        String[][] fakeUsers = {
+            {"Diallo", "Mamadou", "mdiallo", "password123"},
+            {"Ndour", "Aissatou", "aissatou.ndour", "azerty"},
+            {"Diop", "Alioune", "adiop", "pass456"},
+            {"Fall", "Fatou", "fatou.fall", "123456"},
+            {"Sow", "Boubacar", "bsow", "motdepasse"}
+        };
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (String[] user : fakeUsers) {
+                stmt.setString(1, user[0]);
+                stmt.setString(2, user[1]);
+                stmt.setString(3, user[2]);
+                stmt.setString(4, user[3]);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            System.out.println("Utilisateurs fictifs ajoutés avec succès !");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -40,54 +74,94 @@ public class UtilisateurDao {
      * @return La liste des utilisateurs.
      */
     public static ArrayList<Utilisateur> lister() {
+        ArrayList<Utilisateur> utilisateurs = new ArrayList<>();
+        String sql = "SELECT * FROM utilisateurs";
+        try (Connection conn = ConnectionManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                utilisateurs.add(new Utilisateur(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("login"),
+                        rs.getString("password")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("voir "+utilisateurs.isEmpty());
+        if(utilisateurs.isEmpty()) {
+        	
+        	ajouterUtilisateursFictifs();
+        }
         return utilisateurs;
     }
 
-    /**
-     * Supprime un utilisateur de la liste en fonction de son identifiant.
-     *
-     * Cette méthode utilise une boucle for classique pour parcourir la liste.
-     *
-     * @param id L'identifiant de l'utilisateur à supprimer.
-     */
-    public static void supprimer(int id) {
-        for (int i = 0; i < utilisateurs.size(); i++) {
-            if (utilisateurs.get(i).getID() == id) {
-                utilisateurs.remove(i);
-                break; // Sortir de la boucle dès que l'utilisateur est supprimé
-            }
-        }
-    }
 
-    /**
-     * Recherche et retourne un utilisateur par son identifiant.
-     *
-     * @param id L'identifiant de l'utilisateur recherché.
-     * @return L'utilisateur correspondant, ou null si non trouvé.
-     */
-    public static Utilisateur trouver(int id) {
-        for (Utilisateur user : utilisateurs) {
-            if (user.getID() == id) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Met à jour les informations d'un utilisateur.
-     * Remplace l'utilisateur existant avec les nouvelles informations.
-     *
-     * @param utilisateur L'utilisateur avec les informations mises à jour.
-     */
+ 
     public static boolean mettreAJour(Utilisateur utilisateur) {
-        for (int i = 0; i < utilisateurs.size(); i++) {
-            if (utilisateurs.get(i).getID() == utilisateur.getID()) {
-                utilisateurs.set(i, utilisateur);
-                return true;
-                
-            }
+        String sql = "UPDATE utilisateurs SET nom = ?, prenom = ?, login = ?, password = ? WHERE id = ?";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, utilisateur.getNom());
+            stmt.setString(2, utilisateur.getPrenom());
+            stmt.setString(3, utilisateur.getLogin());
+            stmt.setString(4, utilisateur.getPassword());
+            stmt.setInt(5, utilisateur.getID());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }
+    
+    /**
+     * Supprime un utilisateur de la base de données.
+     *
+     * @param id L'identifiant de l'utilisateur à supprimer.
+     * @return true si la suppression a réussi, false sinon.
+     */
+    public static boolean supprimer(int id) {
+        String sql = "DELETE FROM utilisateurs WHERE id = ?";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * Trouve un utilisateur par son identifiant.
+     *
+     * @param id L'identifiant de l'utilisateur à trouver.
+     * @return L'utilisateur trouvé ou null si aucun utilisateur n'a été trouvé.
+     */
+    public static Utilisateur trouver(int id) {
+        String sql = "SELECT * FROM utilisateurs WHERE id = ?";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Utilisateur(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("login"),
+                        rs.getString("password")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
+
+

@@ -11,6 +11,7 @@ import java.io.IOException;
 
 /**
  * Servlet implementation class SupprimierUsers
+ * Cette servlet gère la suppression des utilisateurs
  */
 @WebServlet("/SupprimerUsers")
 public class SupprimierUsers extends HttpServlet {
@@ -28,21 +29,42 @@ public class SupprimierUsers extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		// Moussa rappel toi d'une chose
-		// pour convertir un string en int il faut utiliser parseInt qui se trouve dans la classe Integer c'est une méthode static
-		request.setAttribute("utilisateur", UtilisateurDao.trouver(Integer.parseInt(request.getParameter("id"))));
-		System.out.println(request);
+		// Récupération de l'ID de l'utilisateur à supprimer
+		String idParam = request.getParameter("id");
 		
-		getServletContext().getRequestDispatcher("/WEB-INF/modifierUtilisateurs.jsp").forward(request, response);
+		if (idParam != null && !idParam.isEmpty()) {
+			try {
+				// Conversion de l'ID en entier
+				int id = Integer.parseInt(idParam);
+				
+				// Suppression de l'utilisateur
+				boolean supprime = UtilisateurDao.supprimer(id);
+				
+				if (supprime) {
+					// Ajout d'un message de succès
+					request.getSession().setAttribute("message", "Utilisateur supprimé avec succès.");
+				} else {
+					// Ajout d'un message d'erreur
+					request.getSession().setAttribute("erreur", "Échec de la suppression de l'utilisateur.");
+				}
+			} catch (NumberFormatException e) {
+				// En cas d'erreur de conversion
+				request.getSession().setAttribute("erreur", "ID d'utilisateur invalide.");
+			}
+		} else {
+			// Si l'ID n'est pas fourni
+			request.getSession().setAttribute("erreur", "ID d'utilisateur non spécifié.");
+		}
 		
+		// Redirection vers la liste des utilisateurs
+		response.sendRedirect("ListeUsers");
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		// Appel de la méthode doGet pour traiter la suppression
 		doGet(request, response);
 	}
 

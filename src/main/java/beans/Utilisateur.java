@@ -44,6 +44,15 @@ public class Utilisateur {
         this.password = password;
     }
     
+    public Utilisateur(int ID, String nom, String prenom, String login, String password) {
+        this.ID=ID;
+    	this.nom = nom;
+        this.prenom = prenom;
+        this.login = login;
+        this.password = password;
+    }
+    
+    
     /**
      * Retourne l'identifiant de l'utilisateur.
      *
